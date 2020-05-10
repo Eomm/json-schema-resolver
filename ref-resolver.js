@@ -25,15 +25,21 @@ function jschemaResolver (rootSchema, options) {
   rootSchema.$id = baseUri // fix the schema $id value
 
   const allIds = new Map()
+  const allRefs = []
 
   if (externalSchemas) {
     externalSchemas.forEach(_ => {
       const ids = mapIds(idExploded, _)
       ids.on('$id', collectIds)
+      ids.on('$ref', collectRefs)
     })
   }
   const ids = mapIds(idExploded, rootSchema)
   ids.on('$id', collectIds)
+  ids.on('$ref', collectRefs)
+
+  // TODO attach every external schema to rootSchema/definition (or $defs for draft 08)
+  // TODO rewrite all the $ref pointing to /definitions
 
   return {
 
@@ -48,6 +54,30 @@ function jschemaResolver (rootSchema, options) {
     } else {
       allIds.set(id, json)
     }
+  }
+
+  function collectRefs (json, baseUri, refVal) {
+    const refUri = URI.parse(refVal)
+    console.log('Ref: ' + URI.serialize(refUri))
+
+    if (refUri.reference !== 'absolute') {
+      refUri.scheme = baseUri.scheme
+      refUri.userinfo = baseUri.userinfo
+      refUri.host = baseUri.host
+      refUri.port = baseUri.port
+
+      if (refUri.reference === 'relative') {
+        const newBaseUri = Object.assign({}, baseUri)
+        newBaseUri.path = refUri.path
+        baseUri = newBaseUri
+      }
+    }
+
+    allRefs.push({
+      baseUri: URI.serialize(baseUri),
+      ref: URI.serialize(refUri),
+      json
+    })
   }
 }
 
@@ -86,6 +116,9 @@ function mapIds (baseUri, schema) {
 
     const fields = Object.keys(json)
     for (const prop of fields) {
+      if (prop === '$ref') {
+        ee.emit('$ref', json, baseUri, json[prop])
+      }
       search(baseUri, json[prop])
     }
   }

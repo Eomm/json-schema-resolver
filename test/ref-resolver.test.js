@@ -14,7 +14,8 @@ test('', t => {
         $id: 'other.json',
         definitions: {
           X: { $id: '#bar' },
-          Z: { $ref: 'commonSchema#' },
+          Z: { $ref: 'commonSchema#/definitions/hello' },
+          Zx: { $ref: 'http://wow/commonSchema#/definitions/hello' },
           Y: { $id: 't/inner.json' }
         }
       },
@@ -29,7 +30,7 @@ test('', t => {
       {
         $id: 'commonSchema',
         type: 'object',
-        properties: {
+        definitions: {
           hello: { type: 'string' }
         }
       }
