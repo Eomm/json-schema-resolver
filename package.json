@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
+    "rfdc": "^1.1.4",
     "standard": "^14.3.3",
     "tap": "^12.7.0"
   },
