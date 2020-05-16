@@ -3,7 +3,7 @@
 const { test } = require('tap')
 const clone = require('rfdc')({ proto: true, circles: false })
 
-const refResolver = require('../ref-resolver')
+const RefResolver = require('../ref-resolver')
 const factory = require('./schema-factory')
 
 // eslint-disable-next-line
@@ -13,7 +13,7 @@ const save = (out) => require('fs').writeFileSync(`./out-${Date.now()}.json`, JS
 
 test('wrong params', t => {
   t.plan(1)
-  t.throws(() => refResolver({ target: 'draft-1000' }))
+  t.throws(() => RefResolver({ target: 'draft-1000' }))
 })
 
 test('$ref to root', t => {
@@ -26,7 +26,7 @@ test('$ref to root', t => {
       factory('relativeId-noRef')
     ]
   }
-  const resolver = refResolver()
+  const resolver = RefResolver()
 
   const originalSchema = clone(schema)
   const out = resolver.resolve(schema, opts)
@@ -44,7 +44,7 @@ test('$ref to an external schema', t => {
     ]
   }
 
-  const resolver = refResolver()
+  const resolver = RefResolver()
 
   const out = resolver.resolve(schema, opts)
   t.deepEquals(schema, out, 'the output is the same input - modified')
@@ -62,7 +62,7 @@ test('$ref to an external schema without changes', t => {
     ]
   }
 
-  const resolver = refResolver({ clone: true })
+  const resolver = RefResolver({ clone: true })
 
   const originalSchema = clone(schema)
   const out = resolver.resolve(schema, opts)
@@ -86,7 +86,7 @@ test('$ref circular', t => {
     ]
   }
 
-  const resolver = refResolver()
+  const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
   t.deepEquals(schema, out, 'the output is the same input modified')
   t.ok(out.definitions, 'definitions has been added')
@@ -107,7 +107,7 @@ test('$ref circular', t => {
     ]
   }
 
-  const resolver = refResolver()
+  const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
   t.deepEquals(schema, out, 'the output is the same input modified')
   t.ok(out.definitions, 'definitions has been added')
@@ -125,7 +125,7 @@ test('$ref local ids', { skip: true }, t => {
     ]
   }
 
-  const resolver = refResolver()
+  const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
   t.deepEquals(schema, out, 'the output is the same input modified')
   // TODO build a graph to track is an external schema is referenced by the root
@@ -142,7 +142,7 @@ test('skip duplicated ids', t => {
     ]
   }
 
-  const resolver = refResolver()
+  const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
   t.deepEquals(schema, out, 'the output is the same input modified')
   t.equals(Object.values(out.definitions).length, 1, 'no external schema added')
@@ -152,7 +152,7 @@ test('dont resolve external schema missing', t => {
   t.plan(1)
   const schema = factory('absoluteId-externalRef')
 
-  const resolver = refResolver({ clone: true })
+  const resolver = RefResolver({ clone: true })
   const out = resolver.resolve(schema)
   t.deepEquals(schema, out, 'the output is the same input not modified')
 })
@@ -161,7 +161,7 @@ test('dont resolve external schema missing #2', t => {
   t.plan(1)
   const schema = factory('absoluteId-asoluteRef')
 
-  const resolver = refResolver({ clone: true })
+  const resolver = RefResolver({ clone: true })
   const out = resolver.resolve(schema)
   t.deepEquals(schema, out, 'the output is the same input not modified')
 })
