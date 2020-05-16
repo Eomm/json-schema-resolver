@@ -9,7 +9,7 @@
     "test": "npm run lint && tap test/**/*.test.js --cov"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=10"
   },
   "repository": {
     "type": "git",

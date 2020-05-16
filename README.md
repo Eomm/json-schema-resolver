@@ -12,7 +12,7 @@ Resolve all `$refs` in your [JSON schema](https://json-schema.org/specification.
 npm install json-schema-resolver
 ```
 
-This plugin support Node.js >=6
+This plugin support Node.js >= 10
 
 ## Usage
 
