@@ -86,6 +86,10 @@ function jsonSchemaResolver (options) {
       if (ref[0] === '#') { return }
 
       const evaluatedJson = allIds.get(baseUri)
+      if (!evaluatedJson) {
+        debug('External $ref %s not provided', ref)
+        return
+      }
       evaluatedJson[kConsumed] = true
       json.$ref = `#/definitions/${evaluatedJson[kRefToDef]}`
     })
@@ -121,19 +125,20 @@ function jsonSchemaResolver (options) {
   function collectRefs (json, baseUri, refVal) {
     const refUri = URI.parse(refVal)
     debug('Pre enqueue $ref %o', refUri)
-    if (refUri.reference === 'same-document') {
 
-    } else if (refUri.reference !== 'absolute') {
+    // "same-document";
+    // "relative";
+    // "absolute";
+    // "uri";
+    if (refUri.reference === 'relative') {
       refUri.scheme = baseUri.scheme
       refUri.userinfo = baseUri.userinfo
       refUri.host = baseUri.host
       refUri.port = baseUri.port
 
-      if (refUri.reference === 'relative') {
-        const newBaseUri = Object.assign({}, baseUri)
-        newBaseUri.path = refUri.path
-        baseUri = newBaseUri
-      }
+      const newBaseUri = Object.assign({}, baseUri)
+      newBaseUri.path = refUri.path
+      baseUri = newBaseUri
     }
 
     const ref = URI.serialize(refUri)

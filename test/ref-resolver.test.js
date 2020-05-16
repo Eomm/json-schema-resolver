@@ -93,7 +93,7 @@ test('$ref circular', t => {
   t.deepEquals(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
 })
 
-test('$ref circular', { skip: true }, t => {
+test('$ref circular', t => {
   t.plan(3)
   const schema = {
     $id: 'http://example.com/',
@@ -111,5 +111,57 @@ test('$ref circular', { skip: true }, t => {
   const out = resolver.resolve(schema, opts)
   t.deepEquals(schema, out, 'the output is the same input modified')
   t.ok(out.definitions, 'definitions has been added')
-  t.deepEquals(Object.values(out.definitions), opts.externalSchemas[1], 'only used schema are added')
+  t.deepEquals(Object.values(out.definitions), [opts.externalSchemas[1]], 'only used schema are added')
+})
+
+test('$ref local ids', { skip: true }, t => {
+  t.plan(2)
+  const schema = factory('multipleLocalId')
+
+  const opts = {
+    externalSchemas: [
+      factory('relativeId-externalAndLocalRef'), // this is not used
+      factory('relativeId-noRef') // this is not used
+    ]
+  }
+
+  const resolver = refResolver()
+  const out = resolver.resolve(schema, opts)
+  t.deepEquals(schema, out, 'the output is the same input modified')
+  // TODO build a graph to track is an external schema is referenced by the root
+  t.equals(Object.values(out.definitions).length, 1, 'no external schema added')
+})
+
+test('skip duplicated ids', t => {
+  t.plan(2)
+  const schema = factory('multipleLocalId')
+
+  const opts = {
+    externalSchemas: [
+      factory('multipleLocalId')
+    ]
+  }
+
+  const resolver = refResolver()
+  const out = resolver.resolve(schema, opts)
+  t.deepEquals(schema, out, 'the output is the same input modified')
+  t.equals(Object.values(out.definitions).length, 1, 'no external schema added')
+})
+
+test('dont resolve external schema missing', t => {
+  t.plan(1)
+  const schema = factory('absoluteId-externalRef')
+
+  const resolver = refResolver({ clone: true })
+  const out = resolver.resolve(schema)
+  t.deepEquals(schema, out, 'the output is the same input not modified')
+})
+
+test('dont resolve external schema missing #2', t => {
+  t.plan(1)
+  const schema = factory('absoluteId-asoluteRef')
+
+  const resolver = refResolver({ clone: true })
+  const out = resolver.resolve(schema)
+  t.deepEquals(schema, out, 'the output is the same input not modified')
 })
