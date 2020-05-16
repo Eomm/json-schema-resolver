@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "test": "tap test/**/*.test.js"
+    "test": "npm run lint && tap test/**/*.test.js --cov"
   },
   "engines": {
     "node": ">=6"
@@ -22,11 +22,11 @@
   },
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
-    "rfdc": "^1.1.4",
     "standard": "^14.3.3",
     "tap": "^12.7.0"
   },
   "dependencies": {
+    "rfdc": "^1.1.4",
     "uri-js": "^4.2.2"
   },
   "keywords": [
