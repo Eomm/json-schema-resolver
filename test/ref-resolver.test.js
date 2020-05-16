@@ -165,3 +165,24 @@ test('dont resolve external schema missing #2', t => {
   const out = resolver.resolve(schema)
   t.deepEquals(schema, out, 'the output is the same input not modified')
 })
+
+test('missing id in root schema', t => {
+  t.plan(3)
+  const schema = {
+    $ref: 'relativePerson'
+  }
+
+  const opts = {
+    externalSchemas: [
+      factory('relativeId-externalAndLocalRef'),
+      factory('relativeId-noRef')
+    ]
+  }
+
+  const resolver = RefResolver()
+  const out = resolver.resolve(schema, opts)
+  save(out)
+  t.deepEquals(schema, out, 'the output is the same input modified')
+  t.ok(out.definitions, 'definitions has been added')
+  t.deepEquals(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
+})

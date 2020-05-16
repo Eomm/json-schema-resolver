@@ -64,7 +64,7 @@ function jsonSchemaResolver (options) {
     // represent a valid URI-reference [RFC3986].  This value SHOULD be
     // normalized, and SHOULD NOT be an empty fragment <#> or an empty
     // string <>.
-    const appUri = URI.parse(rootSchema.$id)
+    const appUri = URI.parse(rootSchema.$id || 'application.uri')
     appUri.fragment = undefined // remove fragment
     debug('Found app URI %o', appUri)
 
@@ -74,7 +74,9 @@ function jsonSchemaResolver (options) {
     }
 
     const baseUri = URI.serialize(appUri) // canonical absolute-URI
-    rootSchema.$id = baseUri // fix the schema $id value
+    if (rootSchema.$id) {
+      rootSchema.$id = baseUri // fix the schema $id value
+    }
     rootSchema[kIgnore] = true
 
     mapIds(ee, appUri, rootSchema)
