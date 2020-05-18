@@ -12,8 +12,9 @@ const save = (out) => require('fs').writeFileSync(`./out-${Date.now()}.json`, JS
 // https://json-schema.org/draft/2019-09/json-schema-core.html#idExamples
 
 test('wrong params', t => {
-  t.plan(1)
+  t.plan(2)
   t.throws(() => RefResolver({ target: 'draft-1000' }))
+  t.throws(() => RefResolver({ externalSchemas: [] }), 'need application uri')
 })
 
 test('$ref to root', t => {
@@ -159,7 +160,7 @@ test('dont resolve external schema missing', t => {
 
 test('dont resolve external schema missing #2', t => {
   t.plan(1)
-  const schema = factory('absoluteId-asoluteRef')
+  const schema = factory('absoluteId-absoluteRef')
 
   const resolver = RefResolver({ clone: true })
   const out = resolver.resolve(schema)

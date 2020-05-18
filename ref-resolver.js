@@ -33,11 +33,7 @@ const targetCfg = {
 // logic: https://json-schema.org/draft/2019-09/json-schema-core.html#rfc.appendix.B.1
 function jsonSchemaResolver (options) {
   const ee = new EventEmitter()
-  const { clone, target } = Object.assign({}, defaultOpts, options)
-
-  if (!targetSupported.includes(target)) {
-    throw new Error(`Unsupported JSON schema version ${target}`)
-  }
+  const { clone, target, applicationUri, externalSchemas: rootExternalSchemas } = Object.assign({}, defaultOpts, options)
 
   const allIds = new Map()
   let rolling = 0
@@ -46,26 +42,47 @@ function jsonSchemaResolver (options) {
   const allRefs = []
   ee.on('$ref', collectRefs)
 
+  if (!targetSupported.includes(target)) {
+    throw new Error(`Unsupported JSON schema version ${target}`)
+  }
+
+  let defaultUri
+  if (applicationUri) {
+    defaultUri = getRootUri(applicationUri)
+
+    if (rootExternalSchemas) {
+      for (const es of rootExternalSchemas) { mapIds(ee, defaultUri, es) }
+      debug('Processed root external schemas')
+    }
+  } else if (rootExternalSchemas) {
+    throw new Error('If you set root externalSchema, the applicationUri option is needed')
+  }
+
   return {
-    resolve
+    resolve,
+    definitions () {
+      const defKey = targetCfg[target].def
+      const x = { [defKey]: {} }
+      allIds.forEach((json, baseUri) => {
+        x[defKey][json[kRefToDef]] = json
+      })
+      return x
+    }
   }
 
   function resolve (rootSchema, opts) {
     const { externalSchemas } = opts || {}
 
-    allIds.clear()
+    if (!rootExternalSchemas) {
+      allIds.clear()
+    }
     allRefs.length = 0
 
     if (clone) {
       rootSchema = cloner(rootSchema)
     }
 
-    // If present, the value for this keyword MUST be a string, and MUST
-    // represent a valid URI-reference [RFC3986].  This value SHOULD be
-    // normalized, and SHOULD NOT be an empty fragment <#> or an empty
-    // string <>.
-    const appUri = URI.parse(rootSchema.$id || 'application.uri')
-    appUri.fragment = undefined // remove fragment
+    const appUri = defaultUri || getRootUri(rootSchema.$id)
     debug('Found app URI %o', appUri)
 
     if (externalSchemas) {
@@ -96,16 +113,19 @@ function jsonSchemaResolver (options) {
       json.$ref = `#/definitions/${evaluatedJson[kRefToDef]}`
     })
 
-    const defKey = targetCfg[target].def
-    allIds.forEach((json, baseUri) => {
-      if (json[kConsumed] === true) {
-        if (!rootSchema[defKey]) {
-          rootSchema[defKey] = {}
-        }
+    if (externalSchemas) {
+      // only if user sets external schema add it to the definitions
+      const defKey = targetCfg[target].def
+      allIds.forEach((json, baseUri) => {
+        if (json[kConsumed] === true) {
+          if (!rootSchema[defKey]) {
+            rootSchema[defKey] = {}
+          }
 
-        rootSchema[defKey][json[kRefToDef]] = json
-      }
-    })
+          rootSchema[defKey][json[kRefToDef]] = json
+        }
+      })
+    }
 
     return rootSchema
   }
@@ -191,6 +211,16 @@ function mapIds (ee, baseUri, json) {
     }
     mapIds(ee, baseUri, json[prop])
   }
+}
+
+function getRootUri (strUri = 'application.uri') {
+  // If present, the value for this keyword MUST be a string, and MUST
+  // represent a valid URI-reference [RFC3986].  This value SHOULD be
+  // normalized, and SHOULD NOT be an empty fragment <#> or an empty
+  // string <>.
+  const uri = URI.parse(strUri)
+  uri.fragment = undefined
+  return uri
 }
 
 module.exports = jsonSchemaResolver
