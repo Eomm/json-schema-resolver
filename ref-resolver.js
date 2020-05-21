@@ -100,7 +100,7 @@ function jsonSchemaResolver (options) {
     debug('Processed root schema')
 
     debug('Generating %d refs', allRefs.length)
-    allRefs.forEach(({ baseUri, ref, json }) => {
+    allRefs.forEach(({ baseUri, ref, refUri, json }) => {
       debug('Evaluating $ref %s', ref)
       if (ref[0] === '#') { return }
 
@@ -110,7 +110,7 @@ function jsonSchemaResolver (options) {
         return
       }
       evaluatedJson[kConsumed] = true
-      json.$ref = `#/definitions/${evaluatedJson[kRefToDef]}`
+      json.$ref = `#/definitions/${evaluatedJson[kRefToDef]}${refUri.fragment || ''}`
     })
 
     if (externalSchemas) {
@@ -166,6 +166,7 @@ function jsonSchemaResolver (options) {
     const ref = URI.serialize(refUri)
     allRefs.push({
       baseUri: URI.serialize(baseUri),
+      refUri,
       ref,
       json
     })
