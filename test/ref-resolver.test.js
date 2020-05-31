@@ -182,8 +182,65 @@ test('missing id in root schema', t => {
 
   const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
-  save(out)
   t.deepEquals(schema, out, 'the output is the same input modified')
   t.ok(out.definitions, 'definitions has been added')
   t.deepEquals(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
+})
+
+test('absolute $ref', t => {
+  t.plan(2)
+  const schema = { $ref: 'http://example.com/#/definitions/idParam' }
+
+  const absSchemaId = {
+    $id: 'http://example.com/',
+    definitions: {
+      uuid: {
+        type: 'string',
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+      },
+      idParam: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { $ref: '#/definitions/uuid' }
+        },
+        additionalProperties: false
+      }
+    }
+  }
+
+  const externalSchemas = [absSchemaId]
+
+  const resolver = RefResolver({ clone: true, applicationUri: 'todo.com', externalSchemas })
+  const out = resolver.resolve(schema)
+
+  t.notEqual(out.$ref, 'http://example.com/#/definitions/idParam')
+  t.deepEquals(resolver.definitions(), {
+    definitions: {
+      'def-0': absSchemaId
+    }
+  })
+})
+
+test('absolute $ref #2', t => {
+  t.plan(2)
+  const schema = factory('absoluteId-absoluteRef')
+
+  const absSchemaId = {
+    $id: 'http://other-site.com/relativeAddress',
+    type: 'object',
+    properties: {
+      uuid: {
+        type: 'string',
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+      }
+    }
+  }
+
+  const externalSchemas = [absSchemaId]
+
+  const resolver = RefResolver({ clone: true })
+  const out = resolver.resolve(schema, { externalSchemas })
+  t.equal(out.properties.address.$ref, '#/definitions/def-0')
+  t.equal(out.properties.houses.items.$ref, '#/definitions/def-0')
 })

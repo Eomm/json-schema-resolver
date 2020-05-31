@@ -106,7 +106,7 @@ function jsonSchemaResolver (options) {
 
       const evaluatedJson = allIds.get(baseUri)
       if (!evaluatedJson) {
-        debug('External $ref %s not provided', ref)
+        debug('External $ref %s not provided with baseUri %s', ref, baseUri)
         return
       }
       evaluatedJson[kConsumed] = true
@@ -161,6 +161,8 @@ function jsonSchemaResolver (options) {
       const newBaseUri = Object.assign({}, baseUri)
       newBaseUri.path = refUri.path
       baseUri = newBaseUri
+    } else if (refUri.reference === 'uri' || refUri.reference === 'absolute') {
+      baseUri = { ...refUri, fragment: undefined }
     }
 
     const ref = URI.serialize(refUri)
