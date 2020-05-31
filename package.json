@@ -1,6 +1,6 @@
 {
   "name": "json-schema-resolver",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Resolve all your $refs",
   "main": "ref-resolver.js",
   "scripts": {
