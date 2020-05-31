@@ -121,6 +121,14 @@ const anotherResolvedSchema = ref.resolve(input_2_Schema)
 const sharedDefinitions = ref.definitions()
 ```
 
+## Debug
+
+To debug this module, simply set:
+
+```bash
+export DEBUG=json-schema-resolver
+```
+
 ## License
 
 Licensed under [MIT](./LICENSE).
