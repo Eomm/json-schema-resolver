@@ -244,3 +244,65 @@ test('absolute $ref #2', t => {
   t.equal(out.properties.address.$ref, '#/definitions/def-0')
   t.equal(out.properties.houses.items.$ref, '#/definitions/def-0')
 })
+
+test('set showSchemaId to be true with relativeId', t => {
+  t.plan(1)
+
+  const schema = factory('relativeId-showSchemaId')
+  const absSchemaId = {
+    $id: 'relativeIdSchemaId',
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
+  }
+  const externalSchemas = [absSchemaId]
+
+  const resolver = RefResolver({
+    clone: true,
+    showSchemaId: true
+  })
+  resolver.resolve(schema, {
+    externalSchemas
+  })
+  const definitions = resolver.definitions()
+
+  t.deepEquals(definitions, {
+    definitions: {
+      [absSchemaId.$id]: absSchemaId
+    }
+  })
+})
+
+test('set showSchemaId to be true with absoluteId', t => {
+  t.plan(1)
+
+  const schema = factory('absoluteId-localRef')
+  const absSchemaId = {
+    $id: 'relativeIdSchemaId',
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
+  }
+  const externalSchemas = [absSchemaId]
+
+  const resolver = RefResolver({
+    clone: true,
+    showSchemaId: true
+  })
+  resolver.resolve(schema, {
+    externalSchemas
+  })
+  const definitions = resolver.definitions()
+
+  t.deepEquals(definitions, {
+    definitions: {
+      'http://example.com/relativeIdSchemaId': absSchemaId
+    }
+  })
+})
