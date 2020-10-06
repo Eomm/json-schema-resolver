@@ -245,51 +245,45 @@ test('absolute $ref #2', t => {
   t.equal(out.properties.houses.items.$ref, '#/definitions/def-0')
 })
 
+const phoneNumberSchemaId = {
+  $id: 'phoneNumber',
+  type: 'object',
+  properties: {
+    countryCode: { type: 'string' },
+    number: { type: 'string' }
+  }
+}
+
 test('set showSchemaId to be true with relativeId', t => {
-  t.plan(1)
+  t.plan(4)
 
   const schema = factory('relativeId-showSchemaId')
-  const absSchemaId = {
-    $id: 'relativeIdSchemaId',
-    type: 'object',
-    properties: {
-      foo: {
-        type: 'string'
-      }
-    }
-  }
-  const externalSchemas = [absSchemaId]
+  const externalSchemas = [phoneNumberSchemaId]
 
   const resolver = RefResolver({
     clone: true,
     showSchemaId: true
   })
-  resolver.resolve(schema, {
+  const out = resolver.resolve(schema, {
     externalSchemas
   })
   const definitions = resolver.definitions()
 
   t.deepEquals(definitions, {
     definitions: {
-      [absSchemaId.$id]: absSchemaId
+      [phoneNumberSchemaId.$id]: phoneNumberSchemaId
     }
   })
+  t.equal(out.properties.personal.homeNumber.$ref, '#/definitions/phoneNumber')
+  t.equal(out.properties.personal.mobilePhoneNumber.$ref, '#/definitions/phoneNumber')
+  t.equal(out.properties.work.$ref, '#/definitions/phoneNumber')
 })
 
 test('set showSchemaId to be true with absoluteId', t => {
   t.plan(1)
 
   const schema = factory('absoluteId-localRef')
-  const absSchemaId = {
-    $id: 'relativeIdSchemaId',
-    type: 'object',
-    properties: {
-      foo: {
-        type: 'string'
-      }
-    }
-  }
-  const externalSchemas = [absSchemaId]
+  const externalSchemas = [phoneNumberSchemaId]
 
   const resolver = RefResolver({
     clone: true,
@@ -302,7 +296,7 @@ test('set showSchemaId to be true with absoluteId', t => {
 
   t.deepEquals(definitions, {
     definitions: {
-      'http://example.com/relativeIdSchemaId': absSchemaId
+      'http://example.com/phoneNumber': phoneNumberSchemaId
     }
   })
 })
