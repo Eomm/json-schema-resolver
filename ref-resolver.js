@@ -17,7 +17,8 @@ const kConsumed = Symbol('json-schema-resolver.consumed') // when an external js
 
 const defaultOpts = {
   target: 'draft-07',
-  clone: false
+  clone: false,
+  showSchemaId: false
 }
 
 const targetSupported = ['draft-07'] // TODO , 'draft-08'
@@ -33,7 +34,7 @@ const targetCfg = {
 // logic: https://json-schema.org/draft/2019-09/json-schema-core.html#rfc.appendix.B.1
 function jsonSchemaResolver (options) {
   const ee = new EventEmitter()
-  const { clone, target, applicationUri, externalSchemas: rootExternalSchemas } = Object.assign({}, defaultOpts, options)
+  const { clone, target, applicationUri, externalSchemas: rootExternalSchemas, showSchemaId } = Object.assign({}, defaultOpts, options)
 
   const allIds = new Map()
   let rolling = 0
@@ -137,7 +138,7 @@ function jsonSchemaResolver (options) {
     const id = URI.serialize(baseUri) + rel
     if (!allIds.has(id)) {
       debug('Collected $id %s', id)
-      json[kRefToDef] = `def-${rolling++}`
+      json[kRefToDef] = showSchemaId ? id : `def-${rolling++}`
       allIds.set(id, json)
     } else {
       debug('WARN duplicated id %s .. IGNORED - ', id)
