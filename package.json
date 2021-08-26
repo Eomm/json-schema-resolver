@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
-    "standard": "^14.3.3",
+    "standard": "^16.0.3",
     "tap": "^12.7.0"
   },
   "dependencies": {
