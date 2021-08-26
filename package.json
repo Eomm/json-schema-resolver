@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "test": "npm run lint && tap test/**/*.test.js --cov"
+    "test": "npm run lint && tap test/**/*.test.js"
   },
   "engines": {
     "node": ">=10"
@@ -23,7 +23,7 @@
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
     "standard": "^16.0.3",
-    "tap": "^12.7.0"
+    "tap": "^15.0.9"
   },
   "dependencies": {
     "debug": "^4.1.1",

@@ -25,11 +25,11 @@ test('application uri priority', t => {
   const resolver = RefResolver(opts)
 
   resolver.resolve(schema)
-  t.notEqual(schema.$id, 'http://example.com/SimplePerson')
+  t.not(schema.$id, 'http://example.com/SimplePerson')
   t.equal(schema.$id, 'one-single-uri.to')
 
   const externalDef = resolver.definitions()
-  t.deepEqual(externalDef.definitions, {})
+  t.same(externalDef.definitions, {})
 })
 
 test('multiple resolve over same externals', t => {
@@ -51,14 +51,14 @@ test('multiple resolve over same externals', t => {
 
   const out1 = resolver.resolve(schema1)
   t.notMatch(schema1, originalSchema1, 'the refs has been changed')
-  t.deepEquals(out1, schema1)
+  t.same(out1, schema1)
   t.notOk(schema1.definitions, 'definition has not been added')
 
   const out2 = resolver.resolve(schema2)
   t.notMatch(schema2, originalSchema2, 'the refs has been changed')
-  t.deepEquals(out2, schema2)
+  t.same(out2, schema2)
   t.notOk(schema2.definitions, 'definition has not been added')
 
   const externalDef = resolver.definitions()
-  t.deepEqual(externalDef.definitions['def-0'], factory('relativeId-noRef'))
+  t.same(externalDef.definitions['def-0'], factory('relativeId-noRef'))
 })
