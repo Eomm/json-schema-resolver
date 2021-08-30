@@ -4,12 +4,10 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
 Resolve all `$refs` in your [JSON schema](https://json-schema.org/specification.html)!  
-This module will resolve the `$ref` keyword against the `externalSchemas` you will provide.
+This module will resolve the `$ref` keyword against the `externalSchemas` you will provide.  
+By resolving the `$ref` keyword, means that you get back a single BIG inlined JSON schema that does not rely on any external schema.
 If a reference is missing, it will not throw any error.
 
-The `$ref` will be modified to point to a local reference `#/definitions/<generated key>`.
-Moreover, the `definitions` keyword will be decorated with the external schemas to get only
-one JSON schema resolved as output.
 
 ## Install
 
@@ -21,11 +19,24 @@ This plugin support Node.js >= 10
 
 ## Usage: resolve one schema against external schemas
 
+The `$ref` string is going to be modified to point to a local reference URI: `#/definitions/<generated key>`.
+Moreover, the `definitions` keyword will be decorated with the external schemas to get only one JSON schema resolved as output.
+
+By default the `<generated key>` has the `def-${index}` format.
+You can customize it by passing a `buildLocalReference` function as follows:
+
 ```js
 const RefResolver = require('json-schema-resolver')
 
 const ref = RefResolver({
-  clone: true // Clone the input schema without changing it. Default: false
+  clone: true, // Clone the input schema without changing it. Default: false,
+  buildLocalReference (json, baseUri, fragment, i) {
+    // the `json` that is being resolved
+    // the `baseUri` object of the schema. Its values is the parse result from https://www.npmjs.com/package/uri-js
+    // the `fragment` is the `$ref` string when the `$ref` is a relative reference
+    // the `i` is a local counter to generate a unique key
+    return `def-${i}` // default value
+  }
 })
 
 const inputSchema = {
@@ -48,7 +59,7 @@ const addresSchema = {
 }
 
 const singleSchema = ref.resolve(inputSchema, { externalSchemas: [addresSchema] })
-// mySchema is untouched thanks to clone:true
+// inputSchema is untouched thanks to clone:true
 ```
 
 `singleSchema` will be like:
@@ -115,7 +126,7 @@ const inputSchema = {
 
 // the resolved schema DOES NOT have definitions added
 const singleSchema = ref.resolve(inputSchema)
-const anotherResolvedSchema = ref.resolve(input_2_Schema)
+const anotherResolvedSchema = ref.resolve(input_2_Schema) // resolve schemas within the same externalSchemas
 
 // to get the definition you need only to call:
 const sharedDefinitions = ref.definitions()

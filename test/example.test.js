@@ -32,7 +32,7 @@ test('readme example', t => {
 
   const singleSchema = ref.resolve(inputSchema, { externalSchemas: [addresSchema] })
 
-  t.deepEqual(singleSchema, {
+  t.same(singleSchema, {
     $id: 'http://example.com/SimplePerson',
     type: 'object',
     properties: {
@@ -100,7 +100,7 @@ test('readme example #2', t => {
   // to get the definition you need only to call:
   const sharedDefinitions = ref.definitions()
 
-  t.deepEqual(sharedDefinitions, {
+  t.same(sharedDefinitions, {
     definitions: {
       'def-0': {
         $id: 'relativeAddress',
@@ -117,7 +117,7 @@ test('readme example #2', t => {
     }
   })
 
-  t.deepEqual(singleSchema, {
+  t.same(singleSchema, {
     $id: 'my-application.org',
     type: 'object',
     properties: {

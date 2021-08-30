@@ -30,7 +30,7 @@ test('Preserve $ref fragment', t => {
     }
   }, opts)
 
-  t.deepEqual(out, {
+  t.same(out, {
     $id: 'my-schema',
     type: 'object',
     properties: {
