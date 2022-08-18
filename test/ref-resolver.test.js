@@ -244,3 +244,12 @@ test('absolute $ref #2', t => {
   t.equal(out.properties.address.$ref, '#/definitions/def-0')
   t.equal(out.properties.houses.items.$ref, '#/definitions/def-0')
 })
+
+test('do not resolve meta refs', t => {
+  t.plan(1)
+  const schema = factory('metaRef')
+
+  const resolver = RefResolver({ clone: true })
+  const out = resolver.resolve(schema, {})
+  t.same(out.properties.$ref, { type: 'string' })
+})

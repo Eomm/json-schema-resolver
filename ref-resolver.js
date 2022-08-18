@@ -190,7 +190,7 @@ function jsonSchemaResolver (options) {
    * @param {URI} baseUri
    * @param {*} json
    */
-function mapIds (ee, baseUri, json) {
+function mapIds (ee, baseUri, json, parentKey) {
   if (!(json instanceof Object)) return
 
   if (json.$id) {
@@ -218,10 +218,10 @@ function mapIds (ee, baseUri, json) {
 
   const fields = Object.keys(json)
   for (const prop of fields) {
-    if (prop === '$ref') {
+    if (prop === '$ref' && (typeof json.$ref === 'string') && parentKey !== 'properties') {
       ee.emit('$ref', json, baseUri, json[prop])
     }
-    mapIds(ee, baseUri, json[prop])
+    mapIds(ee, baseUri, json[prop], parentKey)
   }
 }
 
