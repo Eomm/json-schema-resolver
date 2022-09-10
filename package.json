@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "test": "npm run lint && tap test/**/*.test.js"
+    "test": "tap test/**/*.test.js"
   },
   "engines": {
     "node": ">=10"
@@ -16,14 +16,15 @@
     "url": "git+https://github.com/Eomm/json-schema-resolver.git"
   },
   "author": "Manuel Spigolon <behemoth89@gmail.com> (https://github.com/Eomm)",
+  "funding": "https://github.com/Eomm/json-schema-resolver?sponsor=1",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Eomm/json-schema-resolver/issues"
   },
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
-    "standard": "^16.0.3",
-    "tap": "^15.0.9"
+    "standard": "^17.0.0",
+    "tap": "^16.3.0"
   },
   "dependencies": {
     "debug": "^4.1.1",
