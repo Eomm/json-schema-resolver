@@ -24,7 +24,7 @@
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
     "standard": "^17.0.0",
-    "tap": "^16.3.0"
+    "tap": "^18.1.4"
   },
   "dependencies": {
     "debug": "^4.1.1",
