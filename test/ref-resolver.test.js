@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const clone = require('rfdc')({ proto: true, circles: false })
 
 const RefResolver = require('../ref-resolver')
@@ -13,8 +13,8 @@ const save = (out) => require('fs').writeFileSync(`./out-${Date.now()}.json`, JS
 
 test('wrong params', t => {
   t.plan(2)
-  t.throws(() => RefResolver({ target: 'draft-1000' }))
-  t.throws(() => RefResolver({ externalSchemas: [] }), 'need application uri')
+  t.assert.throws(() => RefResolver({ target: 'draft-1000' }))
+  t.assert.throws(() => RefResolver({ externalSchemas: [] }), 'need application uri')
 })
 
 test('$ref to root', t => {
@@ -31,8 +31,8 @@ test('$ref to root', t => {
 
   const originalSchema = clone(schema)
   const out = resolver.resolve(schema, opts)
-  t.same(schema, originalSchema, 'the param schema should not be changed')
-  t.equal(schema, out, 'the output schema is the same (LINK) of the input one')
+  t.assert.deepStrictEqual(schema, originalSchema, 'the param schema should not be changed')
+  t.assert.strictEqual(schema, out, 'the output schema is the same (LINK) of the input one')
 })
 
 test('$ref to an external schema', t => {
@@ -48,9 +48,9 @@ test('$ref to an external schema', t => {
   const resolver = RefResolver()
 
   const out = resolver.resolve(schema, opts)
-  t.same(schema, out, 'the output is the same input - modified')
-  t.ok(out.definitions, 'definitions has been added')
-  t.same(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input - modified')
+  t.assert.ok(out.definitions, 'definitions has been added')
+  t.assert.deepStrictEqual(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
 })
 
 test('$ref to an external schema without changes', t => {
@@ -67,10 +67,10 @@ test('$ref to an external schema without changes', t => {
 
   const originalSchema = clone(schema)
   const out = resolver.resolve(schema, opts)
-  t.same(schema, originalSchema, 'the input is unchanged')
-  t.notMatch(schema, out, 'the input is unchanged')
-  t.ok(out.definitions, 'definitions has been added')
-  t.same(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
+  t.assert.deepStrictEqual(schema, originalSchema, 'the input is unchanged')
+  t.assert.notDeepStrictEqual(schema, out, 'the input is unchanged')
+  t.assert.ok(out.definitions, 'definitions has been added')
+  t.assert.deepStrictEqual(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
 })
 
 test('$ref circular', t => {
@@ -89,9 +89,9 @@ test('$ref circular', t => {
 
   const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
-  t.same(schema, out, 'the output is the same input modified')
-  t.ok(out.definitions, 'definitions has been added')
-  t.same(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input modified')
+  t.assert.ok(out.definitions, 'definitions has been added')
+  t.assert.deepStrictEqual(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
 })
 
 test('$ref circular', t => {
@@ -110,9 +110,9 @@ test('$ref circular', t => {
 
   const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
-  t.same(schema, out, 'the output is the same input modified')
-  t.ok(out.definitions, 'definitions has been added')
-  t.same(Object.values(out.definitions), [opts.externalSchemas[1]], 'only used schema are added')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input modified')
+  t.assert.ok(out.definitions, 'definitions has been added')
+  t.assert.deepStrictEqual(Object.values(out.definitions), [opts.externalSchemas[1]], 'only used schema are added')
 })
 
 test('$ref local ids', { skip: true }, t => {
@@ -128,9 +128,9 @@ test('$ref local ids', { skip: true }, t => {
 
   const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
-  t.same(schema, out, 'the output is the same input modified')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input modified')
   // TODO build a graph to track is an external schema is referenced by the root
-  t.equal(Object.values(out.definitions).length, 1, 'no external schema added')
+  t.assert.strictEqual(Object.values(out.definitions).length, 1, 'no external schema added')
 })
 
 test('skip duplicated ids', t => {
@@ -145,8 +145,8 @@ test('skip duplicated ids', t => {
 
   const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
-  t.same(schema, out, 'the output is the same input modified')
-  t.equal(Object.values(out.definitions).length, 1, 'no external schema added')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input modified')
+  t.assert.strictEqual(Object.values(out.definitions).length, 1, 'no external schema added')
 })
 
 test('dont resolve external schema missing', t => {
@@ -155,7 +155,7 @@ test('dont resolve external schema missing', t => {
 
   const resolver = RefResolver({ clone: true })
   const out = resolver.resolve(schema)
-  t.same(schema, out, 'the output is the same input not modified')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input not modified')
 })
 
 test('dont resolve external schema missing #2', t => {
@@ -164,7 +164,7 @@ test('dont resolve external schema missing #2', t => {
 
   const resolver = RefResolver({ clone: true })
   const out = resolver.resolve(schema)
-  t.same(schema, out, 'the output is the same input not modified')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input not modified')
 })
 
 test('missing id in root schema', t => {
@@ -182,9 +182,9 @@ test('missing id in root schema', t => {
 
   const resolver = RefResolver()
   const out = resolver.resolve(schema, opts)
-  t.same(schema, out, 'the output is the same input modified')
-  t.ok(out.definitions, 'definitions has been added')
-  t.same(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
+  t.assert.deepStrictEqual(schema, out, 'the output is the same input modified')
+  t.assert.ok(out.definitions, 'definitions has been added')
+  t.assert.deepStrictEqual(Object.values(out.definitions), opts.externalSchemas, 'external schema has been added to definitions')
 })
 
 test('absolute $ref', t => {
@@ -214,8 +214,8 @@ test('absolute $ref', t => {
   const resolver = RefResolver({ clone: true, applicationUri: 'todo.com', externalSchemas })
   const out = resolver.resolve(schema)
 
-  t.not(out.$ref, 'http://example.com/#/definitions/idParam')
-  t.same(resolver.definitions(), {
+  t.assert.notEqual(out.$ref, 'http://example.com/#/definitions/idParam')
+  t.assert.deepStrictEqual(resolver.definitions(), {
     definitions: {
       'def-0': absSchemaId
     }
@@ -241,6 +241,6 @@ test('absolute $ref #2', t => {
 
   const resolver = RefResolver({ clone: true })
   const out = resolver.resolve(schema, { externalSchemas })
-  t.equal(out.properties.address.$ref, '#/definitions/def-0')
-  t.equal(out.properties.houses.items.$ref, '#/definitions/def-0')
+  t.assert.strictEqual(out.properties.address.$ref, '#/definitions/def-0')
+  t.assert.strictEqual(out.properties.houses.items.$ref, '#/definitions/def-0')
 })

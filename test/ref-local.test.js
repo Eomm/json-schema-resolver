@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 
 const RefResolver = require('../ref-resolver')
 
@@ -45,7 +45,7 @@ test('Resolve absolute refs in schema', t => {
     $ref: 'ObjectC#'
   }, opts)
 
-  t.same(out, {
+  t.assert.deepStrictEqual(out, {
     $ref: '#/definitions/def-1',
     definitions: {
       'def-0': {
@@ -110,7 +110,7 @@ test('Resolve relative refs in schema', t => {
     $ref: 'ObjectA#/properties/relativeExample'
   }, opts)
 
-  t.same(out, {
+  t.assert.deepStrictEqual(out, {
     $ref: '#/definitions/def-0/properties/relativeExample',
     definitions: {
       'def-0': {

@@ -1,6 +1,6 @@
 'use strict'
 
-const URI = require('uri-js')
+const URI = require('fast-uri')
 const cloner = require('rfdc')({ proto: true, circles: false })
 const { EventEmitter } = require('events')
 const debug = require('debug')('json-schema-resolver')
@@ -103,7 +103,7 @@ function jsonSchemaResolver (options) {
     if (rootSchema.$id) {
       rootSchema.$id = baseUri // fix the schema $id value
     }
-    rootSchema[kIgnore] = true
+    Object.defineProperty(rootSchema, kIgnore, { value: true, enumerable: false })
 
     mapIds(ee, appUri, rootSchema)
     debug('Processed root schema')
@@ -118,7 +118,7 @@ function jsonSchemaResolver (options) {
         debug('External $ref %s not provided with baseUri %s', ref, baseUri)
         return
       }
-      evaluatedJson[kConsumed] = true
+      Object.defineProperty(evaluatedJson, kConsumed, { value: true, enumerable: false })
       json.$ref = `#/definitions/${evaluatedJson[kRefToDef]}${refUri.fragment || ''}`
     })
 
@@ -146,7 +146,8 @@ function jsonSchemaResolver (options) {
     const id = URI.serialize(baseUri) + rel
     if (!allIds.has(id)) {
       debug('Collected $id %s', id)
-      json[kRefToDef] = buildLocalReference(json, baseUri, fragment, rolling++)
+      const value = buildLocalReference(json, baseUri, fragment, rolling++)
+      Object.defineProperty(json, kRefToDef, { value, enumerable: false })
       allIds.set(id, json)
     } else {
       debug('WARN duplicated id %s .. IGNORED - ', id)

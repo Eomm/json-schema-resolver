@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const clone = require('rfdc')({ proto: true, circles: false })
 
 const RefResolver = require('../ref-resolver')
@@ -25,11 +25,11 @@ test('application uri priority', t => {
   const resolver = RefResolver(opts)
 
   resolver.resolve(schema)
-  t.not(schema.$id, 'http://example.com/SimplePerson')
-  t.equal(schema.$id, 'one-single-uri.to')
+  t.assert.notEqual(schema.$id, 'http://example.com/SimplePerson')
+  t.assert.strictEqual(schema.$id, 'one-single-uri.to')
 
   const externalDef = resolver.definitions()
-  t.same(externalDef.definitions, {})
+  t.assert.deepStrictEqual(externalDef.definitions, {})
 })
 
 test('multiple resolve over same externals', t => {
@@ -50,15 +50,15 @@ test('multiple resolve over same externals', t => {
   const resolver = RefResolver(opts)
 
   const out1 = resolver.resolve(schema1)
-  t.notMatch(schema1, originalSchema1, 'the refs has been changed')
-  t.same(out1, schema1)
-  t.notOk(schema1.definitions, 'definition has not been added')
+  t.assert.notDeepStrictEqual(schema1, originalSchema1, 'the refs has been changed')
+  t.assert.deepStrictEqual(out1, schema1)
+  t.assert.ok(!schema1.definitions, 'definition has not been added')
 
   const out2 = resolver.resolve(schema2)
-  t.notMatch(schema2, originalSchema2, 'the refs has been changed')
-  t.same(out2, schema2)
-  t.notOk(schema2.definitions, 'definition has not been added')
+  t.assert.notDeepStrictEqual(schema2, originalSchema2, 'the refs has been changed')
+  t.assert.deepStrictEqual(out2, schema2)
+  t.assert.ok(!schema2.definitions, 'definition has not been added')
 
   const externalDef = resolver.definitions()
-  t.same(externalDef.definitions['def-0'], factory('relativeId-noRef'))
+  t.assert.deepStrictEqual(externalDef.definitions['def-0'], factory('relativeId-noRef'))
 })
