@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 
 const RefResolver = require('../ref-resolver')
 
@@ -32,7 +32,7 @@ test('readme example', t => {
 
   const singleSchema = ref.resolve(inputSchema, { externalSchemas: [addresSchema] })
 
-  t.same(singleSchema, {
+  t.assert.deepStrictEqual(singleSchema, {
     $id: 'http://example.com/SimplePerson',
     type: 'object',
     properties: {
@@ -100,7 +100,7 @@ test('readme example #2', t => {
   // to get the definition you need only to call:
   const sharedDefinitions = ref.definitions()
 
-  t.same(sharedDefinitions, {
+  t.assert.deepStrictEqual(sharedDefinitions, {
     definitions: {
       'def-0': {
         $id: 'relativeAddress',
@@ -117,7 +117,7 @@ test('readme example #2', t => {
     }
   })
 
-  t.same(singleSchema, {
+  t.assert.deepStrictEqual(singleSchema, {
     $id: 'my-application.org',
     type: 'object',
     properties: {

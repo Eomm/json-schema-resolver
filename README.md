@@ -32,7 +32,7 @@ const ref = RefResolver({
   clone: true, // Clone the input schema without changing it. Default: false,
   buildLocalReference (json, baseUri, fragment, i) {
     // the `json` that is being resolved
-    // the `baseUri` object of the schema. Its values is the parse result from https://www.npmjs.com/package/uri-js
+    // the `baseUri` object of the schema. Its values is the parse result from https://www.npmjs.com/package/fast-uri
     // the `fragment` is the `$ref` string when the `$ref` is a relative reference
     // the `i` is a local counter to generate a unique key
     return `def-${i}` // default value

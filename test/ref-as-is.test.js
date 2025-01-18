@@ -1,6 +1,6 @@
 
-const { test } = require('tap')
-const URI = require('uri-js')
+const { test } = require('node:test')
+const URI = require('fast-uri')
 const RefResolver = require('../ref-resolver')
 
 test('resolving schema within the $id', t => {
@@ -33,8 +33,8 @@ test('resolving schema within the $id', t => {
   const resolver = RefResolver(opts)
   const out = resolver.resolve(schema)
   const externalDef = resolver.definitions()
-  t.equal(out.properties.greetings.$ref, '#/definitions/greetings')
-  t.same(externalDef.definitions.greetings, opts.externalSchemas[0])
+  t.assert.strictEqual(out.properties.greetings.$ref, '#/definitions/greetings')
+  t.assert.deepStrictEqual(externalDef.definitions.greetings, opts.externalSchemas[0])
 })
 
 test('resolving schema within the $id case #2', t => {
@@ -66,11 +66,11 @@ test('resolving schema within the $id case #2', t => {
 
   const resolver = RefResolver(opts)
   const out = resolver.resolve(schema)
-  t.equal(out.properties.hello.$ref, '#/definitions/urn%3Aschema%3Abase/definitions/hello')
+  t.assert.strictEqual(out.properties.hello.$ref, '#/definitions/urn%3Aschema%3Abase/definitions/hello')
 
   const externalDef = resolver.definitions()
-  t.ok(externalDef.definitions['urn%3Aschema%3Abase'], 'buildLocalReference result')
-  t.ok(externalDef.definitions['urn%3Aschema%3Aref'], 'buildLocalReference result')
+  t.assert.ok(externalDef.definitions['urn%3Aschema%3Abase'], 'buildLocalReference result')
+  t.assert.ok(externalDef.definitions['urn%3Aschema%3Aref'], 'buildLocalReference result')
 })
 
 test('resolving schema within the $id relative', t => {
@@ -99,7 +99,7 @@ test('resolving schema within the $id relative', t => {
       }
     ],
     buildLocalReference (json, baseUri, fragment, i) {
-      t.equal(URI.serialize(baseUri), baseUriCheck.shift())
+      t.assert.strictEqual(URI.serialize(baseUri), baseUriCheck.shift())
       return escape(json.$id)
     }
   }
@@ -111,6 +111,6 @@ test('resolving schema within the $id relative', t => {
 
   const resolver = RefResolver(opts)
   const out = resolver.resolve(schema)
-  t.equal(out.properties.user.$ref, '#/definitions/http%3A//hello.absolute/user.json/definitions/name')
-  t.equal(out.properties.address.$ref, '#/definitions/adr/definitions/street')
+  t.assert.strictEqual(out.properties.user.$ref, '#/definitions/http%3A//hello.absolute/user.json/definitions/name')
+  t.assert.strictEqual(out.properties.address.$ref, '#/definitions/adr/definitions/street')
 })

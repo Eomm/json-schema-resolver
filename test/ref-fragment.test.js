@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 
 const RefResolver = require('../ref-resolver')
 
@@ -30,7 +30,7 @@ test('Preserve $ref fragment', t => {
     }
   }, opts)
 
-  t.same(out, {
+  t.assert.deepStrictEqual(out, {
     $id: 'my-schema',
     type: 'object',
     properties: {
