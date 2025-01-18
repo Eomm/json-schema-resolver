@@ -4,8 +4,8 @@
   "description": "Resolve all your $refs",
   "main": "ref-resolver.js",
   "scripts": {
-    "lint": "standard",
-    "lint:fix": "standard --fix",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "test": "c8 node --test"
   },
   "engines": {
@@ -24,7 +24,8 @@
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
     "c8": "^10.1.3",
-    "standard": "^17.0.0"
+    "eslint": "^9.18.0",
+    "neostandard": "^0.12.0"
   },
   "dependencies": {
     "debug": "^4.1.1",

@@ -1,4 +1,3 @@
-
 const { test } = require('node:test')
 const URI = require('fast-uri')
 const RefResolver = require('../ref-resolver')
