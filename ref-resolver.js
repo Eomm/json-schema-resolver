@@ -1,6 +1,6 @@
 'use strict'
 
-const URI = require('uri-js')
+const URI = require('fast-uri')
 const cloner = require('rfdc')({ proto: true, circles: false })
 const { EventEmitter } = require('events')
 const debug = require('debug')('json-schema-resolver')
