@@ -13,8 +13,8 @@ const save = (out) => require('fs').writeFileSync(`./out-${Date.now()}.json`, JS
 
 test('wrong params', t => {
   t.plan(2)
-  t.throws(() => RefResolver({ target: 'draft-1000' }))
-  t.throws(() => RefResolver({ externalSchemas: [] }), 'need application uri')
+  t.assert.throws(() => RefResolver({ target: 'draft-1000' }))
+  t.assert.throws(() => RefResolver({ externalSchemas: [] }), 'need application uri')
 })
 
 test('$ref to root', t => {

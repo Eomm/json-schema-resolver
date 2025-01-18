@@ -9,7 +9,7 @@
     "test": "c8 node --test"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=20"
   },
   "repository": {
     "type": "git",
