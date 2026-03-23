@@ -24,7 +24,7 @@
   "homepage": "https://github.com/Eomm/json-schema-resolver#readme",
   "devDependencies": {
     "c8": "^11.0.0",
-    "eslint": "^9.18.0",
+    "eslint": "^10.1.0",
     "neostandard": "^0.13.0"
   },
   "dependencies": {
